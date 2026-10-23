@@ -87,7 +87,7 @@ All colours are defined once at the top of `frontend/src/index.css`: the light v
 
 Admins and superadmins (not staff) change these images from the public pages while signed in:
 
-- **Home banner:** on the home page, use **Upload banner / Change banner / Remove** on the banner. Recommended 2400 x 800 px (3:1), with the important content in the middle because phones crop the sides.
+- **Home banner:** on the home page, use **Upload banner / Change banner / Remove** on the banner. Recommended 2400 x 800 px (3:1) for computers and tablets. Below it there is a second, optional upload for **phones** (for example 1080 x 1350 px, 4:5); without it, phones show the main banner in full, uncropped. Routes: `POST|DELETE /api/site/banner` and `/api/site/banner-mobile`.
 - **Prize photos:** on the Prizes page (and the prize list on the home page), use **Upload image / Change image / Remove** on each prize.
 
 JPG, PNG or WebP up to 5 MB (no SVG). Files are saved in `backend/public/uploads/` on the server, so they survive redeploys (the GitHub deploy never deletes that folder) and are not in Git. Visitors and staff accounts see the images but no buttons, and the API refuses their uploads. Until a banner is uploaded a plain placeholder is shown (a `public/brand/banner.jpg` file, if you ship one, is used as the fallback). New backend files: `SiteImageController`, `SiteImages`, routes `POST|DELETE /api/site/banner` and `POST|DELETE /api/prizes/{id}/image`. No migration is needed. If you move the site to another server, copy the `public/uploads` folder too.

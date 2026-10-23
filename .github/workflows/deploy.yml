@@ -63,9 +63,9 @@ jobs:
       # Same secret names as the other site's workflow: SSH_USERNAME (SSH_USER also works); the port may be a secret or a variable.
       SSH_USER: ${{ secrets.SSH_USERNAME || secrets.SSH_USER }}
       SSH_PORT: ${{ secrets.SSH_PORT || vars.SSH_PORT || '22' }}
-      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || secrets.DEPLOY_PATH }}
       PHP_BIN: ${{ vars.PHP_BIN || 'php' }}
-      SITE_URL: ${{ vars.SITE_URL }}
+      SITE_URL: ${{ vars.SITE_URL || secrets.SITE_URL }}
     steps:
       - name: Check the settings are filled in
         run: |

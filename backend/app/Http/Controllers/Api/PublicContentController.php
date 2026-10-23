@@ -29,6 +29,7 @@ class PublicContentController extends Controller
             'proof_max_kb' => (int) config('promo.proof_max_kb'),
             'registration_open' => (bool) config('promo.registration_open'),
             'banner_url' => SiteImages::bannerUrl(),
+            'banner_mobile_url' => SiteImages::mobileBannerUrl(),
         ]]);
     }
 

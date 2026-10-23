@@ -55,22 +55,30 @@ class SiteImages
         }
     }
 
+    /** Newest uploaded file with this prefix ("banner" or "bannermobile"), else null. */
+    private static function newest(string $prefix): ?string
+    {
+        $files = glob(self::dir().'/'.$prefix.'-*.*') ?: [];
+        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+
+        return $files !== [] ? asset('uploads/'.basename($files[0])) : null;
+    }
+
     /** Newest uploaded banner, else a banner.jpg shipped in public/brand/, else null (the site shows a placeholder). */
     public static function bannerUrl(): ?string
     {
-        $files = glob(self::dir().'/banner-*.*') ?: [];
-        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
-
-        if ($files !== []) {
-            return asset('uploads/'.basename($files[0]));
-        }
-
-        return is_file(public_path('brand/banner.jpg')) ? asset('brand/banner.jpg') : null;
+        return self::newest('banner') ?? (is_file(public_path('brand/banner.jpg')) ? asset('brand/banner.jpg') : null);
     }
 
-    public static function forgetBanners(): void
+    /** Optional phone-sized banner; when there is none, phones show the main banner. */
+    public static function mobileBannerUrl(): ?string
     {
-        foreach (glob(self::dir().'/banner-*.*') ?: [] as $file) {
+        return self::newest('bannermobile');
+    }
+
+    public static function forgetBanners(string $prefix = 'banner'): void
+    {
+        foreach (glob(self::dir().'/'.$prefix.'-*.*') ?: [] as $file) {
             self::forget('uploads/'.basename($file));
         }
     }

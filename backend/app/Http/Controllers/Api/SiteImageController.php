@@ -17,28 +17,51 @@ class SiteImageController extends Controller
 
     public function setBanner(Request $request): JsonResponse
     {
+        return $this->replace($request, 'banner', 'The banner must be 5 MB or smaller.');
+    }
+
+    public function clearBanner(): JsonResponse
+    {
+        SiteImages::forgetBanners('banner');
+
+        return $this->bannerResponse();
+    }
+
+    /** Optional phone-sized banner (shown on small screens instead of the wide one). */
+    public function setMobileBanner(Request $request): JsonResponse
+    {
+        return $this->replace($request, 'bannermobile', 'The mobile banner must be 5 MB or smaller.');
+    }
+
+    public function clearMobileBanner(): JsonResponse
+    {
+        SiteImages::forgetBanners('bannermobile');
+
+        return $this->bannerResponse();
+    }
+
+    private function replace(Request $request, string $prefix, string $tooBig): JsonResponse
+    {
         $request->validate(['image' => self::RULES], [
             'image.mimes' => 'Upload a JPG, PNG or WebP image.',
             'image.image' => 'Upload a JPG, PNG or WebP image.',
-            'image.max' => 'The banner must be 5 MB or smaller.',
+            'image.max' => $tooBig,
         ]);
 
-        $path = SiteImages::store($request->file('image'), '', 'banner');
-        // Keep only the new banner.
-        foreach (glob(SiteImages::dir().'/banner-*.*') ?: [] as $old) {
+        $path = SiteImages::store($request->file('image'), '', $prefix);
+        // Keep only the newest file of this kind.
+        foreach (glob(SiteImages::dir().'/'.$prefix.'-*.*') ?: [] as $old) {
             if ('uploads/'.basename($old) !== $path) {
                 SiteImages::forget('uploads/'.basename($old));
             }
         }
 
-        return response()->json(['data' => ['banner_url' => SiteImages::bannerUrl()]]);
+        return $this->bannerResponse();
     }
 
-    public function clearBanner(): JsonResponse
+    private function bannerResponse(): JsonResponse
     {
-        SiteImages::forgetBanners();
-
-        return response()->json(['data' => ['banner_url' => SiteImages::bannerUrl()]]);
+        return response()->json(['data' => ['banner_url' => SiteImages::bannerUrl(), 'banner_mobile_url' => SiteImages::mobileBannerUrl()]]);
     }
 
     public function setPrizeImage(Request $request, Prize $prize): JsonResponse

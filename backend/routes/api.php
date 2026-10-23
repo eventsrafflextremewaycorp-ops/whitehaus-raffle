@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Route;
 |   POST    /draw/winners/publish         {published: bool} show/hide winners on the public page
 |   PATCH   /draw/winners/{id}/prize      {prize_id}
 |   POST|DELETE /site/banner            home banner image (records level: admin, superadmin)
+|   POST|DELETE /site/banner-mobile     optional phone-sized banner
 |   POST|DELETE /prizes/{id}/image       prize photo (records level)
 |   GET|POST /staff                      list staff / add one {name,email,password}
 |   PATCH   /staff/{id}                  {name,email}
@@ -94,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Home banner and prize photos (JPG/PNG/WebP, 5 MB).
         Route::post('/site/banner', [SiteImageController::class, 'setBanner'])->middleware('throttle:30,1');
         Route::delete('/site/banner', [SiteImageController::class, 'clearBanner']);
+        Route::post('/site/banner-mobile', [SiteImageController::class, 'setMobileBanner'])->middleware('throttle:30,1');
+        Route::delete('/site/banner-mobile', [SiteImageController::class, 'clearMobileBanner']);
         Route::post('/prizes/{prize}/image', [SiteImageController::class, 'setPrizeImage'])->whereNumber('prize')->middleware('throttle:30,1');
         Route::delete('/prizes/{prize}/image', [SiteImageController::class, 'clearPrizeImage'])->whereNumber('prize');
 

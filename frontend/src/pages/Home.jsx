@@ -31,7 +31,7 @@ export default function HomePage() {
       <section className="bg-grid relative overflow-hidden border-b border-ink-800">
         <div aria-hidden className="pointer-events-none absolute -top-40 right-[-10%] size-[36rem] rounded-full bg-brand-600/20 blur-3xl"/>
         <Container className="relative space-y-8 py-8 sm:py-12">
-          <HeroBanner title={`${PROMO.title} ${PROMO.week}`} initialUrl={promotion.ok ? promotion.data.banner_url : null}/>
+          <HeroBanner title={`${PROMO.title} ${PROMO.week}`} initialUrl={promotion.ok ? promotion.data.banner_url : null} initialMobileUrl={promotion.ok ? promotion.data.banner_mobile_url : null}/>
           <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-center">
           <div>
             <p className="max-w-xl text-lg text-ink-300">

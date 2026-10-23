@@ -246,6 +246,14 @@ export async function uploadBanner(file) {
 export async function deleteBanner() {
     return (await request("/site/banner", { method: "DELETE" })).data.banner_url;
 }
+export async function uploadMobileBanner(file) {
+    const body = new FormData();
+    body.set("image", file);
+    return (await request("/site/banner-mobile", { method: "POST", body })).data.banner_mobile_url;
+}
+export async function deleteMobileBanner() {
+    return (await request("/site/banner-mobile", { method: "DELETE" })).data.banner_mobile_url;
+}
 export async function uploadPrizeImage(id, file) {
     const body = new FormData();
     body.set("image", file);

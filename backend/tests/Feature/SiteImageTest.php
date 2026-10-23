@@ -31,10 +31,31 @@ class SiteImageTest extends TestCase
 
     private function cleanUploads(): void
     {
-        foreach (glob(SiteImages::dir().'/banner-*.*') ?: [] as $f) {
+        foreach (glob(SiteImages::dir().'/banner*-*.*') ?: [] as $f) {
             @unlink($f);
         }
         File::deleteDirectory(SiteImages::dir('prizes'));
+    }
+
+    public function test_admin_can_add_and_remove_a_separate_mobile_banner(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->assertNull($this->getJson('/api/promotion')->json('data.banner_mobile_url'));
+
+        $desktop = $this->actingAs($admin)->postJson('/api/site/banner', ['image' => UploadedFile::fake()->image('wide.jpg', 2400, 800)])->json('data.banner_url');
+        $mobile = $this->actingAs($admin)->postJson('/api/site/banner-mobile', ['image' => UploadedFile::fake()->image('phone.jpg', 1080, 1350)])
+            ->assertOk()->json('data.banner_mobile_url');
+
+        $this->assertStringContainsString('/uploads/bannermobile-', $mobile);
+        $this->assertSame($desktop, $this->getJson('/api/promotion')->json('data.banner_url'), 'the main banner is untouched');
+        $this->assertSame($mobile, $this->getJson('/api/promotion')->json('data.banner_mobile_url'));
+
+        $this->actingAs($admin)->deleteJson('/api/site/banner-mobile')->assertOk();
+        $this->assertNull($this->getJson('/api/promotion')->json('data.banner_mobile_url'));
+        $this->assertSame($desktop, $this->getJson('/api/promotion')->json('data.banner_url'));
+
+        $staff = User::factory()->staffRole()->create();
+        $this->actingAs($staff)->postJson('/api/site/banner-mobile', ['image' => UploadedFile::fake()->image('x.jpg')])->assertForbidden();
     }
 
     public function test_admin_can_upload_replace_and_remove_the_banner(): void
