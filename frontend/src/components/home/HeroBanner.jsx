@@ -9,7 +9,7 @@ import { checkImageFile } from "@/lib/images";
  * Home page banner.
  * Admins and superadmins upload the artwork right here (JPG, PNG or WebP, up to 5 MB each):
  *  - the main banner, 2400 x 800 px (3:1), for tablets and computers;
- *  - an optional mobile banner (for example 1080 x 1350 px, 4:5) shown on phones. Without it, phones show the
+ *  - an optional mobile banner (for example 1200 x 1200 px, square) shown on phones. Without it, phones show the
  *    main banner in full, never cropped.
  * Everyone else just sees the image, or a plain placeholder until one has been uploaded.
  * The page title stays in the document as a visually hidden <h1> for screen readers and search engines.
@@ -90,7 +90,7 @@ export function HeroBanner({ title, initialUrl = null, initialMobileUrl = null }
             <ImageControls hasImage={Boolean(url)} busy={busy === "main"} label="banner" onPick={pick("main", uploadBanner, setUrl)} onRemove={() => run("main", deleteBanner, setUrl)} />
           </div>
           <div>
-            <p className="mb-1.5 text-xs font-semibold text-ink-300">Banner for phones (optional, for example 1080 × 1350 px)</p>
+            <p className="mb-1.5 text-xs font-semibold text-ink-300">Banner for phones (optional, for example 1200 × 1200 px, square)</p>
             <ImageControls hasImage={Boolean(mobileUrl)} busy={busy === "mobile"} label="mobile banner" onPick={pick("mobile", uploadMobileBanner, setMobileUrl)} onRemove={() => run("mobile", deleteMobileBanner, setMobileUrl)} />
           </div>
         </div>
