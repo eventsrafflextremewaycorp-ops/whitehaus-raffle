@@ -1,0 +1,25 @@
+# secrets and local settings - never commit these
+.env
+.env.*
+!.env.example
+
+# dependencies and build output (the deploy workflow rebuilds all of these)
+node_modules/
+dist/
+/backend/vendor/
+/backend/public/assets/
+/backend/public/index.html
+/backend/public/favicon.svg
+
+# local data and logs
+*.sqlite
+*.log
+.phpunit.result.cache
+.idea/
+.vscode/
+.DS_Store
+
+# images uploaded by admins on the live site (kept on the server, not in Git)
+/backend/public/uploads/*
+!/backend/public/uploads/.htaccess
+!/backend/public/uploads/.gitkeep

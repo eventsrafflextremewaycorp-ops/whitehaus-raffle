@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f6fa" />
+    <script>
+      /* Apply the saved theme before first paint so there is no flash. Keep in sync with src/lib/theme.js. */
+      (function () {
+        try {
+          var c = localStorage.getItem("gx-theme");
+          var dark = c === "dark" || (c !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.dataset.theme = dark ? "dark" : "light";
+          if (dark) document.querySelector('meta[name="theme-color"]').setAttribute("content", "#07080b");
+        } catch (e) {}
+      })();
+    </script>
+    <meta
+      name="description"
+      content="Register your Apple iPhone 18 Pro or Pro Max order at WhiteHaus from October 23 to December 31, 2026 for freebies worth up to Php 2,995 and a chance to win in the electronic raffle."
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
+    <title>WhiteHaus — iPhone 18 Pro &amp; Pro Max Promo</title>
+  </head>
+  <body>
+    <noscript>WhiteHaus needs JavaScript to run.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

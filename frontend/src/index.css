@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/*
+ * WhiteHaus design tokens - LIGHT theme.
+ * Clean white/soft-grey surfaces, near-black text and the same signal-red accent for primary actions.
+ *
+ * The "ink" scale keeps its old names so every component keeps working, but its meaning is now:
+ *   ink-950 page background      ink-900 cards / panels        ink-850 inputs and table headers
+ *   ink-800 dividers, soft fills ink-700 borders               ink-600 stronger borders
+ *   ink-400 muted text           ink-300 secondary text        ink-200 / ink-100 body text
+ *   heading                      headings and strong text
+ * Contrast on white: heading 17:1, ink-100 14:1, ink-300 8:1, ink-400 5.6:1, brand-600 on white 5.3:1,
+ * white on brand-600 5.3:1.
+ */
+@theme {
+  --color-ink-950: #f5f6fa;
+  --color-ink-900: #ffffff;
+  --color-ink-850: #f0f2f7;
+  --color-ink-800: #e6e9f1;
+  --color-ink-700: #d6dae5;
+  --color-ink-600: #b8bfce;
+  --color-ink-400: #5b6377;
+  --color-ink-300: #424a5e;
+  --color-ink-200: #2f3648;
+  --color-ink-100: #1d2333;
+  --color-heading: #0f1424;
+
+  --color-brand-200: #8f0e19;
+  --color-brand-300: #b3121f;
+  --color-brand-400: #d9192b;
+  --color-brand-500: #e52a3b;
+  --color-brand-600: #d9192b;
+  --color-brand-700: #b3121f;
+
+  --color-success-400: #15803d;
+  --color-warning-400: #b45309;
+  --color-info-400: #0369a1;
+  --color-scrim: #0f1424;
+
+  --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1rem;
+}
+
+/*
+ * DARK theme: same token names, different values. It applies when <html data-theme="dark"> is set by
+ * src/lib/theme.js (the visitor's choice, or their device setting when they pick "Match my device").
+ */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink-950: #07080b;
+  --color-ink-900: #0d0f14;
+  --color-ink-850: #12151c;
+  --color-ink-800: #181c25;
+  --color-ink-700: #252b38;
+  --color-ink-600: #353d4e;
+  --color-ink-400: #8d95a8;
+  --color-ink-300: #b4bacb;
+  --color-ink-200: #cfd3e0;
+  --color-ink-100: #e8eaf0;
+  --color-heading: #ffffff;
+
+  --color-brand-200: #ffb3b9;
+  --color-brand-300: #ff8a93;
+  --color-brand-400: #ff5a66;
+  --color-brand-500: #f2283a;
+  --color-brand-600: #d9192b;
+  --color-brand-700: #b3121f;
+
+  --color-success-400: #4ade80;
+  --color-warning-400: #fbbf24;
+  --color-info-400: #7dd3fc;
+  --color-scrim: #000000;
+  --grid-line: rgb(255 255 255 / 0.04);
+}
+
+:root {
+  --grid-line: rgb(15 20 36 / 0.045);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-ink-100);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-400);
+    outline-offset: 2px;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Faint grid used behind page heroes only. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+}

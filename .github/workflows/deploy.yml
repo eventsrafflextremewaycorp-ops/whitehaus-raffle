@@ -1,0 +1,143 @@
+# Test, then deploy to Bluehost over SSH. Runs on every push to main, or by hand from the Actions tab.
+# Setup steps (SSH key, secrets, variables): DEPLOY-GITHUB-ACTIONS.md
+name: Test and deploy to Bluehost
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time; a second push waits instead of overlapping.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Backend tests and frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, pdo_sqlite, fileinfo, ctype, xml, curl, openssl
+          coverage: none
+          tools: composer:v2
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run backend tests
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the frontend (catches build errors before anything is uploaded)
+        working-directory: frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run build
+
+  deploy:
+    name: Deploy to Bluehost
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Add "required reviewers" to this environment in GitHub if you want a manual approval before each deploy.
+    environment: production
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      # Same secret names as the other site's workflow: SSH_USERNAME (SSH_USER also works); the port may be a secret or a variable.
+      SSH_USER: ${{ secrets.SSH_USERNAME || secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT || vars.SSH_PORT || '22' }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      PHP_BIN: ${{ vars.PHP_BIN || 'php' }}
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - name: Check the settings are filled in
+        run: |
+          for v in SSH_HOST SSH_USER DEPLOY_PATH SITE_URL; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not set (see DEPLOY-GITHUB-ACTIONS.md)"; exit 1; fi
+          done
+
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, fileinfo, ctype, xml, curl, openssl
+          coverage: none
+          tools: composer:v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build backend for production (no dev packages)
+        working-directory: backend
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Build frontend into backend/public
+        working-directory: frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run build:laravel
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Upload files
+        run: |
+          SSH_CMD="ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          TARGET="$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+
+          # Everything except what lives only on the server: .env, storage/ (logs, sessions, uploaded proofs),
+          # bootstrap/cache, and files that are not needed to run the site.
+          rsync -az -e "$SSH_CMD" \
+            --exclude '.env' \
+            --exclude '/storage/' \
+            --exclude '/bootstrap/cache/*' \
+            --exclude '/tests/' \
+            --exclude '*.sqlite' \
+            --exclude '.git*' \
+            --exclude '/public/assets/' \
+            backend/ "$TARGET"
+
+          # Built frontend files have hashed names, so old ones are removed to keep the folder tidy.
+          rsync -az --delete -e "$SSH_CMD" backend/public/assets/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/public/assets/"
+
+      - name: Migrate and clear caches on the server
+        run: |
+          ssh -i "$HOME/.ssh/id_deploy" -p "$SSH_PORT" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            "set -e; cd '$DEPLOY_PATH'; rm -f bootstrap/cache/config.php bootstrap/cache/routes-*.php; '$PHP_BIN' artisan migrate --force; '$PHP_BIN' artisan config:clear; '$PHP_BIN' artisan route:clear; '$PHP_BIN' artisan view:clear"
+
+      - name: Check the live site answers
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -fsS --max-time 20 "$SITE_URL/api/promotion" > /dev/null; then echo "Live site OK"; exit 0; fi
+            echo "Attempt $i failed, retrying..."; sleep 6
+          done
+          echo "::error::$SITE_URL/api/promotion did not answer. Check storage/logs/laravel.log on the server."
+          exit 1
