@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * WhiteHaus participating stores (promo mechanics document for Weeks 2 to 10, Oct 2026; the
- * https://xtremewaycorp.com/whitehaus/participating-branches.php page lists the same 13 stores).
+ * https://xtremewaycorp.com/whitehaus/participating-branches.php page lists the same stores).
  * No street addresses are published for most of them, so `address` is left null.
  * The regions are only used to group the list on the site.
  */
@@ -21,7 +21,6 @@ class BranchSeeder extends Seeder
         'North Luzon' => [
             'SM City Cauayan', 'SM City Pulilan', 'Ayala Malls Harbor Point', 'SM City Rosales',
         ],
-
     ];
 
     public function run(): void

@@ -24,6 +24,9 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PROMO_REGISTRATION_OPEN" value="true"/>
+        <!-- Pin the draw size so DrawTest doesn't depend on the PROMO_MAX_DRAW in your local .env -->
+        <env name="PROMO_MAX_DRAW" value="23" force="true"/>
+        <env name="PROMO_MAJOR_DRAWS" value="3" force="true"/>
         <env name="SANCTUM_STATEFUL_DOMAINS" value="localhost,localhost:3000"/>
     </php>
 </phpunit>

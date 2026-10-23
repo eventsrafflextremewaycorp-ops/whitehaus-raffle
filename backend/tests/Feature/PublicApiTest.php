@@ -31,11 +31,14 @@ class PublicApiTest extends TestCase
 
     public function test_branches_lists_all_published_branches_plus_website(): void
     {
-        $response = $this->getJson('/api/branches')->assertOk();
+        $data = $this->getJson('/api/branches')->assertOk()->json('data');
 
-        $this->assertCount(14, $response->json('data')); // 13 stores + the website
-        $this->assertSame('SM City East Ortigas', $response->json('data.0.name'));
-        $this->assertSame('Website', $response->json('data.13.region'));
+        // Derived from the seeder so adding or removing a store never breaks this test.
+        $stores = collect(BranchSeeder::BRANCHES)->flatten();
+
+        $this->assertCount($stores->count() + 1, $data); // every store + the website
+        $this->assertSame($stores->first(), $data[0]['name']);
+        $this->assertSame('Website', end($data)['region']);
     }
 
     public function test_prizes_match_published_values(): void
