@@ -41,5 +41,10 @@ class BranchSeeder extends Seeder
             ['name' => 'WhiteHaus Website'],
             ['region' => 'Website', 'address' => null, 'is_online' => true, 'sort_order' => ++$order, 'is_active' => true]
         );
+
+        // Stores taken out of the list above are switched off, not deleted, so past registrations
+        // and winners keep their branch. They disappear from the form and the registration rules.
+        Branch::whereNotIn('name', collect(self::BRANCHES)->flatten()->push('WhiteHaus Website'))
+            ->update(['is_active' => false]);
     }
 }

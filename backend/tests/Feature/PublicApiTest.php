@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Branch;
 use App\Models\Prize;
 use App\Models\Registration;
 use App\Models\Winner;
@@ -39,6 +40,16 @@ class PublicApiTest extends TestCase
         $this->assertCount($stores->count() + 1, $data); // every store + the website
         $this->assertSame($stores->first(), $data[0]['name']);
         $this->assertSame('Website', end($data)['region']);
+    }
+
+    public function test_stores_removed_from_the_seeder_are_hidden(): void
+    {
+        Branch::create(['name' => 'Closed Store', 'region' => 'Metro Manila', 'is_online' => false, 'sort_order' => 99, 'is_active' => true]);
+
+        $this->seed(BranchSeeder::class);
+
+        $this->assertFalse(Branch::where('name', 'Closed Store')->value('is_active'));
+        $this->assertNotContains('Closed Store', array_column($this->getJson('/api/branches')->json('data'), 'name'));
     }
 
     public function test_prizes_match_published_values(): void
