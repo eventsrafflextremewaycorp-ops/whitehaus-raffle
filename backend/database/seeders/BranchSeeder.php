@@ -16,14 +16,12 @@ class BranchSeeder extends Seeder
     public const BRANCHES = [
         'Metro Manila' => [
             'SM City East Ortigas', 'SM City Sucat', 'SM City Southmall', 'Sta. Lucia Grand Mall',
-            'Ayala Malls Feliz', 'SM City Novaliches', 'Ayala UP Town Center',
+            'Ayala Malls Feliz', 'SM City Novaliches',
         ],
         'North Luzon' => [
             'SM City Cauayan', 'SM City Pulilan', 'Ayala Malls Harbor Point', 'SM City Rosales',
         ],
-        'South Luzon' => [
-            'Pacific Mall Legazpi', 'Ayala Evo City',
-        ],
+
     ];
 
     public function run(): void

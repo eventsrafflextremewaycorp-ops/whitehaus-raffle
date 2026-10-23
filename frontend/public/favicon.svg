@@ -1,1 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#d9192b"/><text x="32" y="43" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#fff" text-anchor="middle">WH</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 -183 1240 1240" width="512" height="512">
+  <title>WhiteHaus</title>
+  <defs>
+    <linearGradient id="dark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8c8c8c"/>
+      <stop offset="1" stop-color="#5e5e5e"/>
+    </linearGradient>
+    <linearGradient id="mid" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6e6e6e"/>
+      <stop offset="1" stop-color="#555"/>
+    </linearGradient>
+    <linearGradient id="light1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d2d2d2"/>
+      <stop offset="1" stop-color="#b2b2b2"/>
+    </linearGradient>
+    <linearGradient id="light2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c4c4c4"/>
+      <stop offset="1" stop-color="#9c9c9c"/>
+    </linearGradient>
+    <mask id="checks">
+      <rect x="0" y="0" width="1300" height="900" fill="#fff"/>
+      <g fill="#000">
+        <rect x="195" y="152" width="60" height="62" rx="8"/>
+        <rect x="330" y="215" width="62" height="62" rx="8"/>
+        <rect x="135" y="248" width="62" height="62" rx="8"/>
+        <rect x="242" y="262" width="62" height="62" rx="8"/>
+        <rect x="178" y="345" width="62" height="62" rx="8"/>
+        <rect x="292" y="377" width="62" height="62" rx="8"/>
+        <rect x="210" y="455" width="62" height="62" rx="8"/>
+      </g>
+    </mask>
+  </defs>
+
+  <!-- left checkered wing -->
+  <path mask="url(#checks)" fill="url(#dark)"
+        d="M70,152 Q70,140 82,140 L100,140 L100,170 L165,170 L165,140 L290,140 L290,170 L355,170 L355,140 L368,140 Q395,143 406,176 L470,380 L300,740 L280,740 L105,252 L105,192 L82,188 Q70,186 70,175 Z"/>
+
+  <!-- middle dark arm -->
+  <path fill="url(#mid)" d="M790,140 L842,140 L897,300 L742,742 L598,742 Z"/>
+
+  <!-- H crossbar -->
+  <rect x="700" y="420" width="180" height="50" fill="#a9a9a9"/>
+
+  <!-- light slabs (round joins soften the corners) -->
+  <path fill="url(#light1)" stroke="url(#light1)" stroke-width="34" stroke-linejoin="round"
+        d="M505,157 L803,157 L604,718 L306,718 Z"/>
+  <path fill="url(#light2)" stroke="url(#light2)" stroke-width="34" stroke-linejoin="round"
+        d="M950,157 L1233,157 L1034,718 L751,718 Z"/>
+</svg>
